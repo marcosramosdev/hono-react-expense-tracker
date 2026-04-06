@@ -5,13 +5,17 @@
     "db:up": "docker compose up -d",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "api-docs": "open-cli http://localhost:3000/api/auth/reference#description/introduction"
   },
   "dependencies": {
     "better-auth": "^1.6.0",
     "dotenv": "^17.4.1",
     "drizzle-orm": "^0.45.2",
+    "form-data": "^4.0.5",
     "hono": "^4.12.11",
+    "mailgun.js": "^12.7.1",
+    "open-cli": "^9.0.0",
     "pg": "^8.20.0"
   },
   "devDependencies": {

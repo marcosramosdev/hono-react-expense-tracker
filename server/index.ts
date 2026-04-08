@@ -8,15 +8,17 @@ import { createFiberplane } from "@fiberplane/hono";
 const app = new OpenAPIHono<Env>();
 app.use(logger());
 
-app
-  .get("/", (c) => {
-    return c.text("Hello Hono!");
-  })
-  .basePath("/api")
-  .on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw))
-  .route("/expenses", expensesRoute);
+const api = app.basePath("/api");
 
-app.doc("/openapi.json", {
+api.route("/expenses", expensesRoute);
+
+api.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw));
+
+app.get("/", (c) => {
+  return c.text("Hello Hono!");
+});
+
+api.doc("/openapi.json", {
   openapi: "3.0.0",
   info: {
     title: "Hono Expenses API",
@@ -29,7 +31,7 @@ app.use(
   "/fp/*",
   createFiberplane({
     app,
-    openapi: { url: "/openapi.json" },
+    openapi: { url: "/api/openapi.json" },
   }),
 );
 

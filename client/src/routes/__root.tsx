@@ -4,9 +4,12 @@ import NavBar from "../components/NavBar";
 
 const RootLayout = () => (
   <>
-    <NavBar />
-    <hr />
-    <Outlet />
+    <header>
+      <NavBar />
+    </header>
+    <main className="max-w-xl mx-auto">
+      <Outlet />
+    </main>
     <TanStackRouterDevtools />
   </>
 );

@@ -25,4 +25,12 @@ export default defineConfig({
       "@hooks": "./src/hooks",
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
+    },
+  },
 });

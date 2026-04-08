@@ -2,17 +2,24 @@ import { Link } from "@tanstack/react-router";
 
 function NavBar() {
   return (
-    <nav className="p-2 flex gap-2 justify-between ">
-      <div>
+    <nav className="p-2 flex gap-2 justify-between">
+      <div className="flex gap-2">
         <Link to="/" className="[&.active]:font-bold">
           Home
-        </Link>{" "}
+        </Link>
         <Link to="/about" className="[&.active]:font-bold">
           About
         </Link>
       </div>
 
-      <div>login / logout</div>
+      <div className="flex gap-2">
+        <Link to="/signup" className="[&.active]:font-bold">
+          Sign up
+        </Link>{" "}
+        <Link to="/signin" className="[&.active]:font-bold">
+          sign in
+        </Link>
+      </div>
     </nav>
   );
 }

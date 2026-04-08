@@ -1,21 +1,65 @@
 import { authMiddleware } from "@/middleware/auth.middleware";
-import type { Env } from "@/types/Env.types";
-import type { NewExpenses } from "@/types/Expenses.types";
 import { createExpenseValidator } from "@/validators/expenses.validator";
-import { Hono } from "hono";
 import {
   getExpensesQuery,
   insertExpenseQuery,
 } from "@/db/queries/expenses.query";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { expensesSchema } from "@/types/Expenses.types";
+import type { Env } from "@/types/Env.types";
 
-const expensesRoute = new Hono<Env>()
-  .use(authMiddleware)
-  .get("/", async (c) => {
+const messageSchema = z.object({
+  message: z.string(),
+});
+
+const getExpenses = createRoute({
+  method: "get",
+  path: "/",
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: expensesSchema.array(),
+        },
+      },
+      description: "Retrieve the user",
+    },
+    401: {
+      content: {
+        "application/json": {
+          schema: messageSchema,
+          example: {
+            message: "You are not authenticated.",
+          },
+        },
+      },
+      description: "User is not authenticated",
+    },
+    500: {
+      content: {
+        "application/json": {
+          schema: messageSchema,
+          example: {
+            message: "Error getting expenses.",
+          },
+        },
+      },
+      description: "Error getting expenses",
+    },
+  },
+});
+
+const expensesRoute = new OpenAPIHono<Env>();
+
+expensesRoute.use(authMiddleware);
+
+expensesRoute
+  .openapi(getExpenses, async (c) => {
     const user = c.get("user");
     if (!user) return c.json({ message: "You are not authenticated." }, 401);
     try {
       const expenses = await getExpensesQuery(user.id);
-      return c.json(expenses);
+      return c.json(expenses, 200);
     } catch (error) {
       console.error(error);
       return c.json({ message: "Error getting expenses." }, 500);

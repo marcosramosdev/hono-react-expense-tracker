@@ -1,0 +1,30 @@
+
+### login using email and password
+POST http://localhost:3000/api/auth/sign-in/email
+Content-Type: application/json
+Origin: http://localhost:3000
+
+{
+  "email": "marcosramos.dev@gmail.com",
+  "password": "senha123",
+  "callbackURL": "/",
+  "rememberMe": true
+}
+
+
+### Get Expenses
+http://localhost:3000/api/expenses
+
+
+
+### Create expense
+POST http://localhost:3000/api/expenses
+Content-Type: application/json
+Origin: http://localhost:3000
+
+{
+  "amount": "24.50"
+}
+
+
+

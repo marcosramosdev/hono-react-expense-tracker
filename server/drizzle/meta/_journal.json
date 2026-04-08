@@ -15,6 +15,13 @@
       "when": 1775509779992,
       "tag": "0001_abnormal_blazing_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775586326963,
+      "tag": "0002_wandering_rhodey",
+      "breakpoints": true
     }
   ]
 }

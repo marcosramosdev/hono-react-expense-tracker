@@ -13,6 +13,9 @@ function NavBar() {
       </div>
 
       <div className="flex gap-2">
+        <Link to="/dashboard" className="[&.active]:font-bold">
+          Dashboard
+        </Link>{" "}
         <Link to="/signup" className="[&.active]:font-bold">
           Sign up
         </Link>{" "}

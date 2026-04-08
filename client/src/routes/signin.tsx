@@ -1,3 +1,4 @@
+import { SignInForm } from "../features/authentication/components/SignInForm";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/signin")({
@@ -5,5 +6,9 @@ export const Route = createFileRoute("/signin")({
 });
 
 function RouteComponent() {
-  return <div>implement sign in page</div>;
+  return (
+    <div>
+      <SignInForm />
+    </div>
+  );
 }

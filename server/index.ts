@@ -3,6 +3,7 @@ import { logger } from "hono/logger";
 import expensesRoute from "./routes/expenses.route";
 import type { Env } from "./types/Env.types";
 import { Hono } from "hono";
+import { Scalar } from "@scalar/hono-api-reference";
 
 const app = new Hono<Env>();
 app.use(logger());

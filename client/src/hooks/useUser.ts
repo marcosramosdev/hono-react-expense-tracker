@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { authClient } from "../lib/auth-client";
 
 export function useUser() {
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
       const { data } = await authClient.getSession();
@@ -12,6 +12,9 @@ export function useUser() {
 
   return {
     user: data,
+    isLoading,
+    isError,
+    isAuthenticated: !!data && !isError,
     emailVerified: data?.emailVerified,
   };
 }

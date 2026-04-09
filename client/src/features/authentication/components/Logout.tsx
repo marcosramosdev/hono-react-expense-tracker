@@ -12,6 +12,7 @@ export function Logout() {
         onSuccess: () => {
           // Limpa os dados do usuário do cache
           queryClient.removeQueries({ queryKey: ["user"] });
+          window.location.reload();
           navigate({
             to: "/",
           });

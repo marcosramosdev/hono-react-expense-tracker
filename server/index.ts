@@ -20,13 +20,4 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-// Cron job to log data every minute
-cron.schedule("*/3 * * * * *", async () => {
-  const users = await db.select().from(userTable);
-
-  for (const user of users) {
-    console.log("Processando usuário:", user.id);
-  }
-});
-
 export default app;

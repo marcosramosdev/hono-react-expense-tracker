@@ -2,170 +2,98 @@
 
 ## Project Overview
 
-This is a full-stack TypeScript application using:
+Full-stack TypeScript monorepo with separate client and server packages:
 
-- **Runtime**: Bun
-- **Backend**: Hono
+- **Runtime**: Bun (root + server), Node (client via Vite)
+- **Backend**: Hono at `server/` (port 3000)
+- **Frontend**: React 19 + Vite + TanStack Router + TanStack Query at `client/` (port 5173)
 - **Database**: PostgreSQL with Drizzle ORM
-- **Auth**: Better Auth
-- **Frontend**: React (inferred from project name)
+- **Auth**: Better Auth with email verification via Mailgun
 
 ## Commands
 
-### Development
-
 ```bash
-bun run dev              # Start dev server with hot reload
+# Development (runs both server and client)
+bun run dev              # Concurrently runs `bun run server` and `bun run web`
+bun run server           # Hono server with hot reload (port 3000)
+bun run web              # Vite dev server (port 5173)
+
+# Database
 bun run db:up           # Start PostgreSQL via Docker Compose
-bun run db:generate     # Generate Drizzle migrations
+bun run db:generate     # Generate Drizzle migrations → `./server/drizzle/`
 bun run db:migrate      # Run pending migrations
-bun run db:studio       # Open Drizzle Studio (GUI)
-bun run api-docs        # Open OpenAPI documentation
+bun run db:studio       # Drizzle Studio GUI
+
+# Docs
+bun run api-docs        # Opens Better Auth OpenAPI reference
+
+# Testing (no tests exist yet)
+bun test <file>         # Bun's built-in test runner
 ```
 
-### Running a Single Test
+## Architecture
 
-This project uses Bun's built-in test runner. Run tests with:
+### Server Entry Points
+- **`server/index.ts`**: Hono app, routes mounted at `/api`, Better Auth handlers at `/api/auth/*`
+- **`server/lib/auth.ts`**: Better Auth config with Drizzle adapter, Mailgun email verification
+- **`drizzle.config.ts`**: Migrations output to `./server/drizzle/`, schema at `./server/db/schema.ts`
 
-```bash
-bun test                 # Run all tests
-bun test <file>          # Run specific test file
-bun test --watch        # Watch mode
-```
-
-## Code Style Guidelines
-
-### TypeScript Conventions
-
-- Use explicit return types for route handlers and utility functions
-- Prefer `interface` over `type` for object shapes that may be extended
-- Never use `any` — use `unknown` when type is truly unknown
-- Use `zod-openapi` for runtime validation and OpenAPI spec generation
-
-### Import Organization
-
-Order imports in this order (separate with blank lines):
-
-1. External libraries (Hono, Drizzle, etc.)
-2. Internal packages (`@/`)
-3. Local relative imports (`./*`)
-
-Example:
-
-```typescript
-import { Hono } from "hono";
-import { db } from "@/db/db";
-import { expenses } from "../schema";
-import type { Env } from "@/types/Env.types";
-```
+### Client Entry Points
+- **`client/src/main.tsx`**: React app mount
+- **`client/src/routes/`**: TanStack Router file-based routes (see `.tanstack/`)
 
 ### Path Aliases
+- Server: `@/` → `./server/*` (tsconfig paths)
+- Client: Standard Vite aliases
 
-Use the `@/` prefix for absolute imports from project root:
+## Conventions
 
+### Import Order
+Separate with blank lines:
+1. External libraries
+2. `@/` internal imports
+3. Relative imports (`./`, `../`)
+
+### File Naming
+- **Files**: kebab-case (`expenses.route.ts`, `auth.middleware.ts`)
+- **Types**: PascalCase (`Env.types.ts`)
+- Routes: Resource-oriented plural nouns (`/expenses`, `/auth`)
+
+### Code Patterns
+
+**Route handlers** (`server/routes/*.route.ts`):
 ```typescript
-import { getExpensesQuery } from "@/db/queries/expenses.query";
-import { authMiddleware } from "@/middleware/auth.middleware";
+const route = new Hono()
+  .use(authMiddleware)
+  .get("/", async (c) => { ... })
 ```
 
-### Naming Conventions
+**Auth middleware** sets context vars (`user`, `session`, `isAuthenticated`) — always check `c.get("user")` and return 401 if null.
 
-- **Files**: kebab-case (e.g., `expenses.route.ts`, `auth.middleware.ts`)
-- **Types/Interfaces**: PascalCase (e.g., `Expenses`, `Env`)
-- **Functions/Variables**: camelCase
-- **Constants**: SCREAMING_SNAKE_CASE for config, camelCase for others
-- **Routes**: Resource-oriented, plural nouns (e.g., `/expenses`, `/auth`)
+**Database queries**:
+- Use `.returning()` for INSERTs that need the record
+- `.returning()` always returns an array — access with `[0]`
+- Use `z.string()` for date fields (Drizzle serializes to ISO strings)
 
-### API Routes (Hono + Zod OpenAPI)
+**Environment**: Use `Bun.env` (not `process.env`) in server code.
 
-Follow this pattern for route definitions:
-
-```typescript
-const route = createRoute({
-  method: "get" | "post" | "put" | "delete",
-  path: "/",
-  request: { /* validation schemas */ },
-  responses: {
-    200: { content: { "application/json": { schema: /* response schema */ } } },
-    400: { /* error response */ },
-    401: { /* auth error */ },
-  },
-});
-```
-
-Use `openapi()` method on Zod schemas to add examples and descriptions.
-
-### Error Handling
-
-- Always wrap database operations in try/catch blocks
-- Return appropriate HTTP status codes (200, 400, 401, 500)
-- Use consistent error response format:
-
-```typescript
-return c.json({ message: "Descriptive error message" }, <status>);
-```
-
-- Log errors with `console.error(error)` before returning 500
-
-### Database (Drizzle)
-
-- Use `.returning()` for INSERT queries that need the created record
-- Drizzle's `.returning()` always returns an array — access first element:
-
-```typescript
-const result = await insertExpenseQuery(data);
-const newExpense = result[0]; // Extract single item
-```
-
-- Use `z.string()` for date fields in Zod schemas (Drizzle serializes to ISO strings)
-
-### Authentication
-
-- All protected routes must use `authMiddleware`
-- Always check for `c.get("user")` and return 401 if not present
-- Extract user ID from `user.id` for database queries
-
-### Validation (Zod + Hono)
-
-- Define request schemas with `createRoute()` for OpenAPI docs
-- Use `c.req.valid("json")` to access parsed and validated request body
-- Return validation errors as array of [field, message] pairs
-
-### Schema Definitions
-
-- Put database schemas in `server/db/schema.ts`
-- Put type definitions in `server/types/*.types.ts`
-- Put query functions in `server/db/queries/*.query.ts`
-- Put route handlers in `server/routes/*.route.ts`
-- Put middleware in `server/middleware/*.middleware.ts`
-
-### Best Practices
-
-- Keep route handlers focused on HTTP concerns (parse, validate, respond)
-- Push business logic into query/service functions
-- Use environment variables via `Bun.env` (not `process.env`)
-- Run `db:generate` and `db:migrate` after schema changes
-- Test individual query functions before route handlers
-- DONT run any package.json scripts without explicit instructions to do so.
-
-## File Structure
-
+### Directory Ownership
 ```
 server/
 ├── db/
-│   ├── db.ts              # Database connection
-│   ├── schema.ts          # Table definitions
-│   └── queries/           # Database operations
-│       └── *.query.ts
-├── middleware/            # Express-style middleware
-│   └── *.middleware.ts
-├── routes/                # API route handlers
-│   └── *.route.ts
-├── types/                 # TypeScript types
-│   └── *.types.ts
-├── validators/            # Zod validation schemas
-│   └── *.validator.ts
-├── lib/                  # Utilities (email, auth, etc.)
-│   └── *.ts
-└── index.ts              # App entry point
+│   ├── db.ts              # Database connection (Postgres pool)
+│   ├── schema.ts          # Table definitions + relations
+│   └── queries/           # Query functions (*.query.ts)
+├── middleware/            # Hono middleware (*.middleware.ts)
+├── routes/                # API routes (*.route.ts)
+├── types/                 # TypeScript types (*.types.ts)
+├── validators/            # Zod schemas (*.validator.ts)
+└── lib/                   # Utilities (auth.ts, email.ts)
 ```
+
+## Gotchas
+
+- **Better Auth trusted origins**: Configured for `http://localhost:5173` — update `server/lib/auth.ts` if client port changes
+- **Migrations location**: `drizzle.config.ts` outputs to `./server/drizzle/` (not `./drizzle/`)
+- **No CI/tests**: No `.github/workflows` or test files exist yet
+- **Mailgun**: Email verification requires valid `MAILGUN_API_KEY` and `MAILGUN_DOMAIN` in `.env`

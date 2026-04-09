@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "../../../lib/auth-client";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   email: z.string().email("Enter a valid email").min(1, "Email is required"),
@@ -17,6 +18,8 @@ export function SignInForm() {
   const [error, setError] = useState("");
 
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -34,6 +37,8 @@ export function SignInForm() {
       },
       {
         onSuccess: () => {
+          // Invalida a query do usuário para forçar recarregamento
+          queryClient.invalidateQueries({ queryKey: ["user"] });
           router.navigate({
             to: "/dashboard",
           });

@@ -1,25 +1,30 @@
-import { useUser } from "../hooks/useUser";
 import { Logout } from "../features/authentication/components/Logout";
 import { Link } from "@tanstack/react-router";
 
-function NavBar() {
-  const { isAuthenticated, isLoading } = useUser();
+type Props = {
+  authenticated: boolean;
+};
 
+function NavBar({ authenticated }: Props) {
   return (
     <nav className="p-2 flex gap-2 justify-between">
-      <div className="flex gap-2">
-        <Link to="/" className="[&.active]:font-bold">
-          Home
-        </Link>
-        <Link to="/about" className="[&.active]:font-bold">
-          About
-        </Link>
-      </div>
+      {authenticated ? (
+        <div>
+          <h1 className="font-bold">Expense Tracker LOGO</h1>{" "}
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <Link to="/" className="[&.active]:font-bold">
+            Home
+          </Link>
+          <Link to="/about" className="[&.active]:font-bold">
+            About
+          </Link>
+        </div>
+      )}
 
       <div className="flex gap-2 items-center">
-        {isLoading ? (
-          <span className="text-gray-500">Loading...</span>
-        ) : isAuthenticated ? (
+        {authenticated ? (
           <>
             <Link to="/dashboard" className="[&.active]:font-bold">
               Dashboard

@@ -1,17 +1,20 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import NavBar from "../components/NavBar";
+import type { QueryClient } from "@tanstack/react-query";
+
+interface RouterContext {
+  queryClient: QueryClient;
+}
 
 const RootLayout = () => (
   <>
-    <header>
-      <NavBar />
-    </header>
-    <main className="max-w-xl mx-auto">
+    <main>
       <Outlet />
     </main>
     <TanStackRouterDevtools />
   </>
 );
 
-export const Route = createRootRoute({ component: RootLayout });
+export const Route = createRootRouteWithContext<RouterContext>()({
+  component: RootLayout,
+});

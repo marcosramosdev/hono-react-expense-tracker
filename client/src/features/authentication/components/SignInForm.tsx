@@ -1,4 +1,4 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link, redirect, useRouter } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,10 +39,11 @@ export function SignInForm() {
         onSuccess: () => {
           // Invalida a query do usuário para forçar recarregamento
           queryClient.invalidateQueries({ queryKey: ["user"] });
-          router.navigate({
+          redirect({
             to: "/dashboard",
           });
         },
+
         onError: (ctx) => {
           setError(ctx.error.message);
         },

@@ -12,16 +12,16 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    // requireEmailVerification: true,
   },
-  emailVerification: {
-    sendVerificationEmail: async ({ user, url, token }, request) => {
-      void sendEmail({
-        name: user.name,
-        to: user.email,
-        subject: "Verify your email address",
-        text: `Click the link to verify your email: ${url}`,
-      });
-    },
-  },
+  // emailVerification: {
+  //   sendVerificationEmail: async ({ user, url, token }, request) => {
+  //     void sendEmail({
+  //       name: user.name,
+  //       to: user.email,
+  //       subject: "Verify your email address",
+  //       text: `Click the link to verify your email: ${url}`,
+  //     });
+  //   },
+  // },
 });

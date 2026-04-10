@@ -15,7 +15,7 @@ export function useUser() {
     // Se falhar, tenta novamente (útil no primeiro carregamento)
     retry: 1,
     // Sessão deve ser verificada frequentemente
-    staleTime: 0,
+    staleTime: 5 * 60 * 1000, // 5 minutos
   });
 
   return {

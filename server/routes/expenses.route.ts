@@ -12,8 +12,16 @@ const expensesRoute = new Hono<Env>().use(authMiddleware);
 expensesRoute.get("/", async (c) => {
   const user = c.get("user");
   if (!user) return c.json({ message: "You are not authenticated." }, 401);
+
+  const pageParam = c.req.query("page");
+  const page = Number(pageParam ?? "1");
+
+  if (!Number.isFinite(page) || page < 1) {
+    return c.json({ message: "Invalid page value." }, 400);
+  }
+
   try {
-    const expenses = await getExpensesQuery(user.id);
+    const expenses = await getExpensesQuery(user.id, page);
     return c.json(expenses, 200);
   } catch (error) {
     console.error(error);

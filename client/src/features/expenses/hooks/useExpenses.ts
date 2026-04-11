@@ -6,6 +6,14 @@ type CreateExpenseInput = {
   description?: string;
 };
 
+type PaginatedExpensesResponse = {
+  expenses: Expenses[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+};
+
 export function useCreateExpense() {
   const queryClient = useQueryClient();
   const { mutate, error, isPending } = useMutation({
@@ -27,13 +35,17 @@ export function useCreateExpense() {
   return { mutate, error, isPending };
 }
 
-export function useGetExpenses() {
+export function useGetExpenses(page: number) {
   const { data, error, isPending } = useQuery({
-    queryKey: ["getExpenses"],
-    queryFn: async (): Promise<Expenses[]> => {
-      const response = await fetch("/api/expenses");
-      const data = await response.json();
-      return data;
+    queryKey: ["getExpenses", page],
+    queryFn: async (): Promise<PaginatedExpensesResponse> => {
+      const response = await fetch(`/api/expenses?page=${page}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch expenses.");
+      }
+
+      return response.json();
     },
   });
 

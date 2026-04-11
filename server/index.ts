@@ -5,16 +5,18 @@ import type { Env } from "./types/Env.types";
 import { Hono } from "hono";
 
 const app = new Hono<Env>();
+
 app.use(logger());
-
-const api = app.basePath("/api");
-
-api.route("/expenses", expensesRoute);
-
-api.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw));
 
 app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-export default app;
+const router = app
+  .basePath("/api")
+  .on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw))
+  .route("/expenses", expensesRoute);
+
+export default router;
+
+export type AppType = typeof router;

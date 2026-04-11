@@ -6,7 +6,7 @@ Origin: http://localhost:3000
 
 {
   "email": "marcosramos.dev@gmail.com",
-  "password": "senha123",
+  "password": "@Senha123",
   "callbackURL": "/",
   "rememberMe": true
 }

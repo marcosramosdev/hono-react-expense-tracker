@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import NavBar from "../components/NavBar";
 
@@ -10,6 +10,16 @@ export const Route = createFileRoute("/_public_pages")({
     // Usa cache do TanStack Query - não faz nova requisição se dados estão frescos
     const session = await context.queryClient.ensureQueryData(sessionQuery());
     return { user: session?.data?.user ?? null };
+  },
+  beforeLoad: async ({ context }) => {
+    // Usa cache do TanStack Query - não faz nova requisição se dados estão frescos
+    const session = await context.queryClient.ensureQueryData(sessionQuery());
+
+    if (session?.data?.user) {
+      throw redirect({
+        to: "/dashboard",
+      });
+    }
   },
 });
 

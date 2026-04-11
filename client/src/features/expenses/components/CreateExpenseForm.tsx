@@ -31,12 +31,12 @@ function CreateExpenseForm() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col">
         <fieldset className="fieldset">
           <legend className="fieldset-legend">Expense title</legend>
           <input
             type="text"
-            className="input"
+            className="input w-full"
             placeholder="My awesome expense"
             required
             {...register("description")}
@@ -47,7 +47,7 @@ function CreateExpenseForm() {
           <legend className="fieldset-legend">Amount</legend>
           <input
             type="number"
-            className="input"
+            className="input w-full"
             placeholder="enter expense amount"
             required
             {...register("amount")}

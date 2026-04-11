@@ -1,4 +1,4 @@
-import { Link, redirect, useRouter } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,26 +30,26 @@ export function SignInForm() {
 
   const onSubmit = async (data: FormTypeSignUp) => {
     setLoading(true);
-    await authClient.signIn.email(
-      {
-        email: data.email,
-        password: data.password,
-      },
-      {
-        onSuccess: () => {
-          // Invalida a query do usuário para forçar recarregamento
-          queryClient.invalidateQueries({ queryKey: ["user"] });
-          redirect({
-            to: "/dashboard",
-          });
-        },
+    setError("");
 
-        onError: (ctx) => {
-          setError(ctx.error.message);
+    try {
+      await authClient.signIn.email(
+        {
+          email: data.email,
+          password: data.password,
         },
-      },
-    );
-    setLoading(false);
+        {
+          onError: (ctx) => {
+            setError(ctx.error.message);
+          },
+          onSuccess: () => {
+            window.location.reload();
+          },
+        },
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -60,7 +60,7 @@ export function SignUpForm() {
   };
 
   return (
-    <div className="flex flex-col gap-4 rounded-box bg-base-200 p-6 max-w-md w-full">
+    <div className="flex flex-col gap-4 rounded-box bg-base-200 p-6 max-w-md w-full mx-auto">
       <h1 className="text-3xl font-bold self-center">Create an account</h1>
 
       <span className="self-center">

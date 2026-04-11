@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-import NavBar from "../components/NavBar";
-
+import NavBar from "@/components/NavBar";
 import { sessionQuery } from "../lib/sessionQuery";
 
 export const Route = createFileRoute("/_public_pages")({

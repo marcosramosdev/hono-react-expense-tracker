@@ -12,7 +12,7 @@ export async function sendEmail({ subject, text, to, name }: EmailOptions) {
   const mailgun = new Mailgun(FormData);
   const mg = mailgun.client({
     username: "api",
-    key: process.env.MAILGUN_API_KEY as string,
+    key: (process.env.MAILGUN_API_KEY as string) || "",
   });
   try {
     const data = await mg.messages.create(process.env.MAILGUN_DOMAIN!, {

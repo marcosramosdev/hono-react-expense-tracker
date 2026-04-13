@@ -27,6 +27,7 @@ type FormTypeSignUp = z.infer<typeof formSchema>;
 
 export function SignUpForm() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | undefined>();
 
   const router = useRouter();
   const {
@@ -39,7 +40,7 @@ export function SignUpForm() {
 
   const onSubmit = async (data: FormTypeSignUp) => {
     setLoading(true);
-    await authClient.signUp.email(
+    const { error } = await authClient.signUp.email(
       {
         email: data.email,
         password: data.password,
@@ -56,6 +57,7 @@ export function SignUpForm() {
         },
       },
     );
+    if (error) setError(error.message);
     setLoading(false);
   };
 
@@ -167,7 +169,7 @@ export function SignUpForm() {
             </span>
           </label>
         </div>
-
+        {error && <span className="text-error text-sm">{error}</span>}
         <button
           className="btn btn-primary w-full"
           type="submit"

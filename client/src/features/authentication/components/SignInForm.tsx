@@ -1,10 +1,9 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "../../../lib/auth-client";
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   email: z.string().email("Enter a valid email").min(1, "Email is required"),
@@ -16,9 +15,6 @@ type FormTypeSignUp = z.infer<typeof formSchema>;
 export function SignInForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const router = useRouter();
-  const queryClient = useQueryClient();
 
   const {
     register,

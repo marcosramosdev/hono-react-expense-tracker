@@ -13,6 +13,7 @@
   "dependencies": {
     "@fiberplane/hono": "^0.5.5",
     "@hono/zod-validator": "^0.7.6",
+    "@neondatabase/serverless": "^1.0.2",
     "better-auth": "^1.6.0",
     "dotenv": "^17.4.1",
     "drizzle-orm": "^0.45.2",
@@ -22,11 +23,13 @@
     "node-cron": "^4.2.1",
     "open-cli": "^9.0.0",
     "pg": "^8.20.0",
+    "ws": "^8.20.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/pg": "^8.20.0",
+    "@types/ws": "^8.18.1",
     "concurrently": "^9.2.1",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.21.0"

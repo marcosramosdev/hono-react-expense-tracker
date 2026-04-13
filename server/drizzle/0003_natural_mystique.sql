@@ -1,0 +1,1 @@
+ALTER TABLE "expenses" ADD COLUMN "type" varchar(30);

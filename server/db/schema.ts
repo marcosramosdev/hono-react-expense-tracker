@@ -89,6 +89,7 @@ export const expenses = pgTable("expenses", {
 
   amount: text().notNull(),
   description: varchar({ length: 300 }),
+  type: varchar({ length: 30 }),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

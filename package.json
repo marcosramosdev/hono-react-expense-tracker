@@ -1,7 +1,8 @@
 {
   "name": "hono-react-todo",
-  "scripts": {
+"scripts": {
     "server": "bun run --hot server/index.ts",
+    "start": "bun run server/index.ts",
     "web": "cd client && bun run dev",
     "dev": "concurrently \"bun run server\" \"bun run web\"",
     "db:up": "docker compose up -d",
